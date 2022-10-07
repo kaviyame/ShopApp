@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.ShopProduct;
 
+//Concrete class to show products in the Shop
+
 public class ShowDQL implements DQL {
 
 	@Override
