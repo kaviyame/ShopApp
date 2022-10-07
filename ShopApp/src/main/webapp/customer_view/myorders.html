@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<script src="https://code.jquery.com/jquery-1.6.4.js"></script>
+<title>MY ORDERS</title>
+</head>
+<style type="text/css">
+.tftable {
+	font-size: 14px;
+	color: #333333;
+	width: 100%;
+	border-width: 1px;
+	border-color: #87ceeb;
+	border-collapse: collapse;
+}
+
+.tftable th {
+	font-size: 18px;
+	background-color: #87ceeb;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #87ceeb;
+	text-align: left;
+}
+
+.tftable tr {
+	background-color: #ffffff;
+}
+
+.tftable td {
+	font-size: 14px;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #87ceeb;
+}
+
+.tftable tr:hover {
+	background-color: #e0ffff;
+}
+
+.fl {
+	font-size: 16px;
+	display: inline-block;
+}
+
+.topcorner {
+	position: absolute;
+	top: 40px;
+	right: 40px;
+}
+</style>
+
+
+<body>
+	<p id="msg"></p>
+	<div class="topcorner">
+		<form class='fl' action="mycart.html" method="GET">
+			<input type="submit" value="My Cart" />
+		</form>
+		<form class='fl' action="/ShopApp/Logout" method="GET">
+			<input type="submit" name="logout" value="Logout" />
+		</form>
+	</div>
+	<form action="prod_list.html" method="GET">
+		<input type="submit" name="back" value="Back" />
+	</form>
+	<h1>My Orders</h1>
+	<table id="ordersTable" class="tftable" border="1">
+		<tbody id=display>
+
+			<tr>
+				<th>Product Name</th>
+				<th>Selected Quantity</th>
+				<th>Price</th>
+				<th>Net Price</th>
+			</tr>
+
+		</tbody>
+	</table>
+
+
+
+	<script type="text/javascript">
+   
+	
+	
+  $.getJSON('http://localhost:8080/ShopApp/MyOrders', function(data){
+	  for (var key1 in data.orders){
+		var div = document.getElementById('display');
+	    var display = `<tr><td><p id='p_name[${key1}]'>${data.orders[key1].p_name}</p></td>
+	    				<td>${data.orders[key1].ordquan}</td><td>${data.orders[key1].price}</td>
+	    				<td>${data.orders[key1].netprice}</td>
+	    				</tr>`;		    
+	    div.innerHTML += display;
+	  }
+  });
+  
+    
+  
+  </script>
+</body>
+</html>

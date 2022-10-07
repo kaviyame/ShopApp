@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<script src="https://code.jquery.com/jquery-1.6.4.js"></script>
+<title>MY CART</title>
+</head>
+<style type="text/css">
+.tftable {
+	font-size: 14px;
+	color: #333333;
+	width: 100%;
+	border-width: 1px;
+	border-color: #87ceeb;
+	border-collapse: collapse;
+}
+
+.tftable th {
+	font-size: 18px;
+	background-color: #87ceeb;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #87ceeb;
+	text-align: left;
+}
+
+.tftable tr {
+	background-color: #ffffff;
+}
+
+.tftable td {
+	font-size: 14px;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #87ceeb;
+}
+
+.tftable tr:hover {
+	background-color: #e0ffff;
+}
+
+.fl {
+	font-size: 16px;
+	display: inline-block;
+}
+
+.topcorner {
+	position: absolute;
+	top: 40px;
+	right: 40px;
+}
+</style>
+
+
+<body>
+	<p id="msg"></p>
+	<div class="topcorner">
+		<form class='fl' action="myorders.html" method="GET">
+			<input type="submit" value="My Orders" />
+		</form>
+		<form class='fl' action="/ShopApp/Logout" method="GET">
+			<input type="submit" name="logout" value="Logout" />
+		</form>
+	</div>
+	<form action="prod_list.html" method="GET">
+		<input type="submit" name="back" value="Back" />
+	</form>
+	<h1>My Cart</h1>
+	<table id="cartTable" class="tftable" border="1">
+		<tbody id=display>
+
+			<tr>
+				<th>Product Name</th>
+				<th>Selected Quantity</th>
+				<th>Change Quantity</th>
+				<th>Price</th>
+				<th>Net Price</th>
+				<th>Order</th>
+				<th>Remove</th>
+			</tr>
+
+		</tbody>
+	</table>
+
+
+
+	<script type="text/javascript">
+   
+  $.getJSON('http://localhost:8080/ShopApp/ViewCart', function(data){
+	  for (var key1 in data.cart){
+		var div = document.getElementById('display');
+	    var display = `<tr><td><p id='p_name[${key1}]'>${data.cart[key1].p_name}</p></td>
+	    				<td><p id='cartquan[${key1}]'>${data.cart[key1].cartquan}</p></td>
+	    				<td><input type='number' id='quan[${key1}]' min='1' />
+	    				<input type='button' value='Change' onclick='change(${key1})'></td>	 
+	    				<td><p id='price[${key1}]'>${data.cart[key1].price}</p></td>
+	    				<td><p id='netprice[${key1}]'>${data.cart[key1].netprice}</p></td>
+	    				<td><input type='button' value='Order' onclick='order(${key1})'></td>
+	    				<td><input type='button' value='Remove' onclick='remove(${key1})'></td></tr>`;		    
+	    div.innerHTML += display;
+	  }
+  });
+  
+  function order(key1){
+		
+	     let p_name= JSON.stringify(document.getElementById("p_name["+key1+"]").innerHTML);
+	     let selectedquan=JSON.stringify(document.getElementById("cartquan[" + key1+"]").innerHTML);
+	     
+	     let j = `{p_name: ${p_name}, selectedquan: ${selectedquan}}`;
+	     
+	     jQuery.ajax({
+	    	  url : 'http://localhost:8080/ShopApp/Order',
+	    	  type: 'POST',
+	    	  headers: {
+	    		  "Accept": "application/json; odata=verbose",
+	    		  "Content-Type": "application/json; odata=verbose"
+	    		  },
+	    	  dataType : "json",
+	    	  data: j,
+	    	  beforeSend: function(xhr){xhr.setRequestHeader('X-Header', 'header-value');},    
+	         
+	     	  success : function(data){
+	    	   	  var msg= document.getElementById('msg');
+	    	   	  
+	    	   	  msg.innerHTML = `${data.msg}`;
+
+	    	   	alert(`${data.msg}`);
+	    	   	document.getElementById("cartTable").deleteRow(key1+1);
+	    	     }});
+	  }
+  
+  
+  function change(key1){
+		
+	     let p_name= JSON.stringify(document.getElementById("p_name["+key1+"]").innerHTML);
+	     let selectedquan=document.getElementById("quan["+key1+"]").value;
+	     
+	     let j = `{p_name: ${p_name}, selectedquan: ${selectedquan}}`;
+	     
+	     jQuery.ajax({
+	    	  url : 'http://localhost:8080/ShopApp/AddToCart',
+	    	  type: 'POST',
+	    	  headers: {
+	    		  "Accept": "application/json; odata=verbose",
+	    		  "Content-Type": "application/json; odata=verbose"
+	    		  },
+	    	  dataType : "json",
+	    	  data: j,
+	    	  beforeSend: function(xhr){xhr.setRequestHeader('X-Header', 'header-value');},    
+	         
+	     	  success : function(data){
+	    	   	  var msg= document.getElementById('msg');
+	    	   	  var cart = document.getElementById("cartquan["+key1+"]");
+	    	   	  var price = document.getElementById("price["+key1+"]");
+	    	   	  var netprice = document.getElementById("netprice["+key1+"]");
+	    	   	 
+	    	   	  
+	    	   	  msg.innerHTML = `${data.msg}`;
+	    	   	  cart.innerHTML = `${data.cartquan}`;
+	    	   	  price.innerHTML = `${data.price}`;
+	    	   	  netprice.innerHTML = `${data.netprice}`;
+	    	   	  
+	    	   	alert(`${data.msg}`);
+	    	     }});
+	     
+	 
+	     
+	  }
+  
+  function remove(key1){
+      
+      let p_name= JSON.stringify(document.getElementById("p_name["+key1+"]").innerHTML);
+      
+      let j = `{p_name: ${p_name}}`;
+      
+      jQuery.ajax({
+    	  url : 'http://localhost:8080/ShopApp/RemoveCartItem',
+    	  type: 'POST',
+    	  headers: {
+    		  "Accept": "application/json; odata=verbose",
+    		  "Content-Type": "application/json; odata=verbose"
+    		  },
+    	  dataType : "json",
+    	  data: j,
+    	  beforeSend: function(xhr){xhr.setRequestHeader('X-Header', 'header-value');},    
+         
+     	  success : function(data){
+        	  var msg= document.getElementById('msg');
+        	  msg.innerHTML = `${data.msg}`;
+        	  document.getElementById("cartTable").deleteRow(key1+1);
+          }});
+      
+      
+     
+  }
+  
+  
+  </script>
+</body>
+</html>

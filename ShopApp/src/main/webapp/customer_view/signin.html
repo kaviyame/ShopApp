@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Customer SignIn</title>
+</head>
+<body>
+	<div align="center"
+		style="margin-right: 350px; margin-left: 350px; margin-top: 100px">
+		<article>
+			<aside style="float: left">
+				<h1>Customer Register Form</h1>
+				<form action="/ShopApp/CustomerServlet" method="post">
+					<table style="width: 80%">
+						<tr>
+							<td>Customer Name</td>
+							<td><input type="text" name="name" /></td>
+						</tr>
+						<tr>
+						<tr>
+							<td>Gender</td>
+							<td><label for="male">Male</label> <input type="radio"
+								name="gender" id="male" value="male" checked> <label
+								for="female">Female</label> <input type="radio" name="gender"
+								id="female" value="female"></td>
+						</tr>
+						<tr>
+							<td>Age</td>
+							<td><input type="number" name="age" /></td>
+						</tr>
+						<tr>
+							<td>UserName</td>
+							<td><input type="text" name="username" /></td>
+						</tr>
+						<tr>
+							<td>Password</td>
+							<td><input type="password" name="password" /></td>
+						</tr>
+						<tr>
+							<td>Confirm Password</td>
+							<td><input type="password" name="confirmpassword" /></td>
+						</tr>
+						<tr>
+						</tr>
+						<tr>
+							<td>Contact No</td>
+							<td><input type="text" name="contact" /></td>
+						</tr>
+					</table>
+					<input type="hidden" value="validate" name="verify" /> <input
+						type="hidden" value="Customer" name="userType" /> <input
+						type="submit" value="register" />
+				</form>
+			</aside>
+			<aside style="float: right; margin-right: 200">
+				<h1>Customer LogIn Form</h1>
+				<form action="/ShopApp/CustomerServlet" method="post">
+					<table style="width: 80%">
+						<tr>
+							<td>UserName</td>
+							<td><input type="text" name="username" /></td>
+						</tr>
+						<tr>
+							<td>Password</td>
+							<td><input type="password" name="password" /></td>
+						</tr>
+					</table>
+					<input type="hidden" value="auth" name="verify" /> <input
+						type="hidden" value="Customer" name="userType" /> <input
+						type="submit" value="login" />
+
+				</form>
+			</aside>
+		</article>
+	</div>
+
+</body>
+</html>

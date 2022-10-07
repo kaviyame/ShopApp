@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<script src="https://code.jquery.com/jquery-1.6.4.js"></script>
+<title>MY PRODUCTS</title>
+</head>
+<style type="text/css">
+.tftable {
+	font-size: 14px;
+	color: #333333;
+	width: 100%;
+	border-width: 1px;
+	border-color: #87ceeb;
+	border-collapse: collapse;
+}
+
+.tftable th {
+	font-size: 18px;
+	background-color: #87ceeb;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #87ceeb;
+	text-align: left;
+}
+
+.tftable tr {
+	background-color: #ffffff;
+}
+
+.tftable td {
+	font-size: 14px;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #87ceeb;
+}
+
+.tftable tr:hover {
+	background-color: #e0ffff;
+}
+
+pre {
+	font-size: 16px;
+	display: inline-block;
+}
+
+.fl {
+	font-size: 16px;
+	display: inline-block;
+}
+
+.topcorner {
+	position: absolute;
+	top: 40px;
+	right: 40px;
+}
+</style>
+
+
+<body onload='prodsTable()'>
+	<p id="msg"></p>
+	<div class="topcorner">
+		<form class='fl' action="orders.html" method='post'>
+			<input type="submit" value="Orders" />
+		</form>
+
+		<form class='fl' action="/ShopApp/Logout" method="GET">
+			<input type="submit" name="logout" value="Logout" />
+		</form>
+	</div>
+
+	<h1>Add Products</h1>
+	<table id="AddProdTable" class="tftable" border="1">
+		<tbody>
+			<tr>
+				<th>Product Name</th>
+				<th>Quantity</th>
+				<th>Price</th>
+				<th>Add Product</th>
+			</tr>
+			<tr>
+				<td><input type='text' id='p_name'></td>
+				<td><input type='number' id='avlquan'></td>
+				<td><input type='number' id='price'></td>
+				<td><input type='button' value='Add' onclick='addprod()'></td>
+			</tr>
+		</tbody>
+	</table>
+	<h1>My Products</h1>
+
+
+	<table id="ordersTable" class="tftable" border="1">
+		<tbody id=display>
+
+			<tr>
+				<th>Product Name</th>
+				<th>Available Quantity</th>
+				<th>Price</th>
+				<th>Update</th>
+				<th>Remove</th>
+			</tr>
+
+		</tbody>
+	</table>
+
+
+
+	<script type="text/javascript">
+  
+	function prodsTable(){
+	  $.getJSON('http://localhost:8080/ShopApp/MyProducts', function(data){
+		  for (var key1 in data.products){
+			var div = document.getElementById('display');
+		    var display = `<tr><td><p id='p_name[${key1}]'>${data.products[key1].p_name}</p></td>
+		    				<td><pre id='avlquan[${key1}]'>${data.products[key1].avlquan}	</pre>
+		    					<input id='selavlquan[${key1}]' type='number' value='${data.products[key1].avlquan}' min='1'/></td>
+		    				<td><pre id='price[${key1}]'>${data.products[key1].price}	</pre>
+		    					<input id='selprice[${key1}]' type='number' value='${data.products[key1].price}' min='1'/></td>	
+		    				<td><input type='button' value='Update' onclick='update(${key1})'></td>
+		    				<td><input type='button' value='Remove' onclick='remove(${key1})'></td>
+		    				</tr>`;		    
+		    div.innerHTML += display;
+		  }
+	  });
+	} 
+  
+  function update(key1){
+		
+	     let p_name= JSON.stringify(document.getElementById("p_name["+key1+"]").innerHTML);
+	     let avlquan= JSON.stringify(document.getElementById("selavlquan["+key1+"]").value);
+	     let price= JSON.stringify(document.getElementById("selprice["+key1+"]").value);
+	     
+	     
+	     let j = `{p_name: ${p_name}, avlquan: ${avlquan}, price: ${price}}`;
+	     
+	     jQuery.ajax({
+	    	  url : 'http://localhost:8080/ShopApp/UpdateProduct',
+	    	  type: 'POST',
+	    	  headers: {
+	    		  "Accept": "application/json; odata=verbose",
+	    		  "Content-Type": "application/json; odata=verbose"
+	    		  },
+	    	  dataType : "json",
+	    	  data: j,
+	    	  beforeSend: function(xhr){xhr.setRequestHeader('X-Header', 'header-value');},    
+	         
+	     	  success : function(data){
+	    	   	  var msg= document.getElementById('msg');
+	    	   	  var avlquan = document.getElementById("avlquan["+key1+"]");
+	    	   	  var price = document.getElementById("price["+key1+"]");
+	    	   	  alert(`${data.msg}`);
+	    	   	  msg.innerHTML = `${data.msg}`;
+	    	   	  if(`${data.price}`!=0)	price.innerHTML = `${data.price}	`;
+	    	   	  if(`${data.avlquan}`!=0)	avlquan.innerHTML = `${data.avlquan}	`;
+	    	   	  
+	    	     }});
+	  }
+  
+  function remove(key1){
+		
+	     let p_name= JSON.stringify(document.getElementById("p_name["+key1+"]").innerHTML);
+	     
+	     
+	     let j = `{p_name: ${p_name}}`;
+	     
+	     jQuery.ajax({
+	    	  url : 'http://localhost:8080/ShopApp/RemoveProduct',
+	    	  type: 'POST',
+	    	  headers: {
+	    		  "Accept": "application/json; odata=verbose",
+	    		  "Content-Type": "application/json; odata=verbose"
+	    		  },
+	    	  dataType : "json",
+	    	  data: j,
+	    	  beforeSend: function(xhr){xhr.setRequestHeader('X-Header', 'header-value');},    
+	         
+	     	  success : function(data){
+	    	   	  var msg= document.getElementById('msg');
+	    	   	  alert(`${data.msg}`);
+	    	   	  msg.innerHTML = `${data.msg}`;
+	    	   	  document.getElementById("ordersTable").deleteRow(key1+1);
+	    	   	  
+	    	     }});
+	     
+	     
+	    
+	     
+	  }
+  
+  function addprod(){
+		
+	     let p_name= JSON.stringify(document.getElementById("p_name").value);
+	     let avlquan= JSON.stringify(document.getElementById("avlquan").value);
+	     let price= JSON.stringify(document.getElementById("price").value);
+	     
+	     
+	     let j = `{p_name: ${p_name}, avlquan: ${avlquan}, price: ${price}}`;
+	     
+	     jQuery.ajax({
+	    	  url : 'http://localhost:8080/ShopApp/AddProduct',
+	    	  type: 'POST',
+	    	  headers: {
+	    		  "Accept": "application/json; odata=verbose",
+	    		  "Content-Type": "application/json; odata=verbose"
+	    		  },
+	    	  dataType : "json",
+	    	  data: j,
+	    	  beforeSend: function(xhr){xhr.setRequestHeader('X-Header', 'header-value');},    
+	         
+	     	  success : function(data){
+	    	   	  var msg= document.getElementById('msg');
+	    	   	  alert(`${data.msg}`);
+	    	   	  msg.innerHTML = `${data.msg}`;
+	    	   	  
+	    	   	  prodsTable();
+	    	     }});
+	  }
+
+  </script>
+</body>
+</html>

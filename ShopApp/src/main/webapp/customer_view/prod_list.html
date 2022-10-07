@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<script src="https://code.jquery.com/jquery-1.6.4.js"></script>
+<title>PRODUCTS LIST</title>
+</head>
+<style type="text/css">
+.tftable {
+	font-size: 14px;
+	color: #333333;
+	width: 100%;
+	border-width: 1px;
+	border-color: #87ceeb;
+	border-collapse: collapse;
+}
+
+.tftable th {
+	font-size: 18px;
+	background-color: #87ceeb;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #87ceeb;
+	text-align: left;
+}
+
+.tftable tr {
+	background-color: #ffffff;
+}
+
+.tftable td {
+	font-size: 14px;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #87ceeb;
+}
+
+.tftable tr:hover {
+	background-color: #e0ffff;
+}
+
+.topcorner {
+	position: absolute;
+	top: 40px;
+	right: 40px;
+}
+
+.fl {
+	font-size: 16px;
+	display: inline-block;
+}
+</style>
+
+
+<body>
+
+	<div class="topcorner">
+		<form class='fl' action="/ShopApp/customer_view/myorders.html">
+			<input type="submit" value="My Orders" />
+		</form>
+
+		<form class='fl' action="/ShopApp/Logout" method="GET">
+			<input type="submit" name="logout" value="Logout" />
+		</form>
+	</div>
+	<br>
+
+	<form action="/ShopApp/customer_view/mycart.html">
+		<input type="submit" value="View My Cart" />
+	</form>
+
+
+	<h1>Products List</h1>
+	<p id="msg"></p>
+	<table class="tftable" border="1">
+
+		<tbody id=display>
+
+			<tr>
+				<th>Product Name</th>
+				<th>Price</th>
+				<th>Available Quantity</th>
+				<th>Selected Quantity</th>
+				<th>Add To Cart</th>
+			</tr>
+
+		</tbody>
+	</table>
+
+
+
+	<script type="text/javascript">
+  
+	
+	
+  $.getJSON('http://localhost:8080/ShopApp/ViewProducts', function(data){
+	  for (var key1 in data.products){
+		var div = document.getElementById('display');
+	    var display = `<tr><td ><p id='p_name[${key1}]'>${data.products[key1].p_name}</p></td>
+	    				<td>${data.products[key1].price}</td>
+	    				<td><p id='avlquan[${key1}]' >${data.products[key1].avlquan}</p></td>
+	    				<td><pre class='fl' id='cartquan[${key1}]'>${data.products[key1].cartquan}	</pre>
+	    				<input type='number' name='${key1}' min='1' max='${data.products[key1].avlquan}' placeholder='${data.products[key1].cartquan}'/></td>	    
+	    				<td><input type='button' value='AddToCart' onclick='addtocart(${key1})'></td>
+	    				</tr>`;	    
+	    div.innerHTML += display;
+	  }
+  });
+  
+  
+  
+  function addtocart(key1){
+	
+     let p_name= JSON.stringify(document.getElementById("p_name["+key1+"]").innerHTML);
+     let selectedquan=document.getElementsByName(key1)[0].value;
+     
+     let j = `{p_name: ${p_name}, selectedquan: ${selectedquan}}`;
+     
+     jQuery.ajax({
+    	  url : 'http://localhost:8080/ShopApp/AddToCart',
+    	  type: 'POST',
+    	  headers: {
+    		  "Accept": "application/json; odata=verbose",
+    		  "Content-Type": "application/json; odata=verbose"
+    		  },
+    	  dataType : "json",
+    	  data: j,
+    	  beforeSend: function(xhr){xhr.setRequestHeader('X-Header', 'header-value');},    
+         
+     	  success : function(data){
+    	   	  var msg= document.getElementById('msg');
+    	   	  var avlquan = document.getElementById("avlquan["+key1+"]");
+    	   	  var ordquan = document.getElementById("cartquan["+key1+"]");
+    	   	  
+    	   	  msg.innerHTML = `${data.msg}`;
+    	   	  avlquan.innerHTML = `${data.avlquan}`;
+    	   	  ordquan.innerHTML = `${data.cartquan}	`;
+    	   	  
+    	   	alert(`${data.msg}`);
+     }});
+     
+  }
+  
+  </script>
+</body>
+</html>
