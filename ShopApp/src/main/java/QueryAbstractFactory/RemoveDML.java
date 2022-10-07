@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpSession;
 import model.OrderRemove;
 import model.ShopProduct;
 
+//Concrete class to remove a product in the Shop
+
 public class RemoveDML implements DML {
 
 	@Override
