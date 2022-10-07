@@ -15,6 +15,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.ShopProduct;
 
+//Concrete class to update product details
+
 public class UpdateDML implements DML {
 
 	@Override
