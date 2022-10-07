@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpSession;
 import model.OrderRemove;
 import model.ShopProduct;
 
+//Concrete class for adding a new product in shop.
+
 public class AddDML implements DML {
 
 	@Override
@@ -25,7 +27,6 @@ public class AddDML implements DML {
 
 	@Override
 	public void doDMLOperation(HttpServletRequest req, HttpServletResponse res) throws IOException {
-
 		
 		res.setContentType("application/json");
 
@@ -37,7 +38,7 @@ public class AddDML implements DML {
 		String msg = null;
 
 		PrintWriter out = res.getWriter();
-
+	
 		String SQL = "INSERT INTO public.shopproduct(\r\n" + "	p_name, price, quantity)\r\n" + "	VALUES (?, ?, ?);";
 
 		ConnectDB dao = ConnectDB.getInstance();
